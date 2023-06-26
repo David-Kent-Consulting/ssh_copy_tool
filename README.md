@@ -35,7 +35,7 @@ for this file. Make sure when testing that your defined timeout in
 /etc/sshd/sshd_config is appropriately defined. This utility should run fine
 when called from cron.
 
-REQUIREMENTS
+REQUIREMENTS 
 ===================================================================================
 The following requirements are based on when these examples were created as of 30-May-2023. Technology changes fast, so be certain to
 consider testing at more current versions.
