@@ -49,6 +49,7 @@ consider testing at more current versions.
 
 FILES IN THIS REPOSITORY
 ===================================================================================
+|-----------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
 | File Name                         | Description                                                                                                                   |
 | ssh_copy_files.py                 | The described utility within this repository                                                                                  |
 | README.md                         | This README.md file
