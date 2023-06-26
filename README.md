@@ -56,3 +56,24 @@ FILES IN THIS REPOSITORY
 
 INSTRUCTIONS
 ===================================================================================
+1. Make sure your system is up-to-date with all appropriate OS patches.
+2. Setup an SSH key without a passphrase. You can use a passphrase with the library. Note you would have to modify the code to do that.
+3. Make sure the public key has been copied to the remote host.
+4. Make sure the remote host's SSH timeout values are appropriately set. This utility was build to be a replacement to rsync and can be used to copy big files.
+   Big files take time to copy. Adjust accordingly.
+5. We recommend you not save the public key on the same host that holds the private key. Storing the public key on the target and/or in a cloud key vault
+   reduces the attack vector.
+6. Follow the instructions in the utility. Running the utility without any arguments will return these instructions.
+7. Be certain to send both stdout and stderr to a log file when calling this utilty with cron.
+
+REFERENCES
+===================================================================================
+https://pypi.org/project/pysftp/
+https://pysftp.readthedocs.io/en/release_0.2.9/cookbook.html#pysftp-connection-walktree
+http://alvincjin.blogspot.com/2014/09/recursively-fetch-file-paths-from-ftp.html
+
+Acknowledgements
+===================================================================================
+We wish to acknowledge the work of Alvin's Big Data Notebook, otherwise known as
+Changjiu Jin. We don't see a profile for Changejiu on linkedIN anymore. But we do
+appreciate his work that enabled us to solve some problems.
