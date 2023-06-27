@@ -14,7 +14,7 @@ Purpose:        This utility's purpose is to copy files from a source Linux
                 directory on the remote host. This tool by design will not
                 recursively copy files. This tool sets the file access
                 mode of remote files to 660. It can with the correct option
-                remove files on the remote hosts that are not present on
+                remove files on the remote host that are not present on
                 the source host. We note that even today many sysadmin and
                 DBA admin types still rely on rsync or secure NFS. We do not
                 like either approach because:
@@ -70,7 +70,7 @@ Variables:
                 remote_dir          5           The target directory to where the files will
                                                 be copied.
 
-                overwrite_target    variale     Over-write the remote files if already
+                overwrite_target    variable    Over-write the remote files if already
                                                 present.
 
                 delete_obsolete     variable    Remove files on the remote system that are
@@ -118,7 +118,7 @@ def copy_files(my_source_files,
                my_remote_dir):
 
 
-    # build a list of files on the remoter host using a callback method
+    # build a list of files on the remote host using a callback method.
     # Call to walktree() is poorly documented with many errors in
     # many blogs. Use exactly as shown and your headaches will melt
     # away.
@@ -139,7 +139,7 @@ def copy_files(my_source_files,
     for f in wtcb.flist:
         remote_files.append(f)
 
-    # copy the files to the remote host and set the target files to access more 640
+    # copy the files to the remote host and set the target files to access mode 640
     with pysftp.Connection(
         host=host,
         private_key=pkey_file,
@@ -196,7 +196,7 @@ def delete_obsolete_files(my_remote_dir):
         username=user
     ) as sftp:
         
-        # we tried many approaches to this problem. Testing for the presence of the file
+        # We tried many approaches to this problem. Testing for the presence of the file
         # requires the least amount of code and is simplistic logic. Note how we strip
         # away the path from each full file path name and then simply test for the presence
         # of a file on the local system. We simply delete the file from the remote
@@ -216,7 +216,6 @@ def delete_obsolete_files(my_remote_dir):
 ######################################
 
 import os, pysftp, sys
-from tabulate import tabulate
 from os.path import exists
 
 print("ssh_copy_files.py version 1.0")
@@ -248,7 +247,7 @@ delete_obsolete     = False
 if "--overwrite-target" in sys.argv:
     overwrite_target = True
 if "--delete-obsolete" in sys.argv:
-    delete_obsolete = True
+    delete_obsolete  = True
 
 # 2. test local file data
 if not exists(pkey_file):
@@ -265,11 +264,11 @@ with pysftp.Connection(host=host,
 
     # Our practice is to always close the SFTP connection at the end of a code block.
     # There are opposed views on this approach. We believe this approach poses the
-    # least security risk. We repeat this practice throughout this utility.
+    # least security risk. We repeat the practice throughout this utility.
     sftp.close()
 
 # 4. Change to source_dir and build a list of files to copy to the remote directory
-#    and stay there
+#    and stay in that directory untiol the utility exits.
 os.chdir(source_dir)
 source_files = []
 this_dir = os.getcwd()

@@ -37,7 +37,7 @@ when called from cron.
 
 REQUIREMENTS 
 ===================================================================================
-The following requirements are based on when these examples were created as of 30-May-2023. Technology changes fast, so be certain to
+The following requirements are based on when these examples were created as of 26-June-2023. Technology changes fast, so be certain to
 consider testing at more current versions.
 
 | Package                           |  Version      |  Source                                                                                                       |
