@@ -1,4 +1,4 @@
-#!/Users/henrywojteczko/bin/python
+#!/bin/python3
 
 #  replace above with /bin/python3 in final testing
 
