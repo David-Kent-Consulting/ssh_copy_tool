@@ -1,5 +1,6 @@
 #!/bin/python3
 
+
 #  replace above with /bin/python3 in final testing
 
 '''
@@ -12,15 +13,16 @@ Purpose:        This utility's purpose is to copy files from a source Linux
                 VM to a remote Linux VM using the python pysftp library. It
                 copies all of the files from a source directory to a target
                 directory on the remote host. This tool by design will not
-                recursively copy files. This tool sets the file access
-                mode of remote files to 660. It can with the correct option
-                remove files on the remote host that are not present on
-                the source host. We note that even today many sysadmin and
-                DBA admin types still rely on rsync or secure NFS. We do not
-                like either approach because:
-                1) rsync is not secure;
-                2) NFS is not secure unless setup to use encryption, and;
-                3) encrypted NFS is difficult to setup and maintain.
+                recursively copy files in subdirectories. This tool sets the
+                file access mode of remote files to 660. It can with the
+                correct option remove files on the remote host that are not
+                present on the source host. We note that even today many
+                sysadmin and the source host. We note that even today many
+                sysadmin and DBA admin types still rely on rsync or secure
+                NFS. We do not like either approach because:
+                    1) rsync is not secure;
+                    2) NFS is not secure unless setup to use encryption, and;
+                    3) encrypted NFS is difficult to setup and maintain.
 
 Requirements:   Please see the README.md file for requirements, caveats, and
                 use cases within the GIT repository
@@ -76,6 +78,11 @@ Variables:
                 delete_obsolete     variable    Remove files on the remote system that are
                                                 not present on the source host within the
                                                 source directory.
+                                                
+                delete_input        variable    Deletes all input source files in the directory
+                                                after the copy operation completes. This option
+                                                may not be used in conjunction with the option
+                                                delete_obsolete
 
                 Global Variables of concern
                 ===========================
@@ -111,6 +118,7 @@ Order of logic
 5. Re-open an SSH session and copy the files to the remote host
 6. If delete_obsolete, delete files on remote system in remote directory that
    are not present on the local system
+7. If delete_input, delete the input files from the source system
                 
 '''
 
@@ -150,19 +158,21 @@ def copy_files(my_source_files,
         # remote directory.
         if overwrite_target:
             for s in my_source_files:
-                print("Copying " + s + " to remote host " + host)
-                sftp.put(s, remote_dir + "/" + s)
-                sftp.chmod(remote_dir + "/" + s, 640)
-                print("Copy of file " + s + "to remote host " + host + " completed to " + remote_dir + "/" + s)
-        
-        # This is how the utility is normally used.        
-        else:
-            for s in my_source_files:
-                if (remote_dir + "/" + s) not in remote_files:
+                if exists(source_dir + "/" + s):
                     print("Copying " + s + " to remote host " + host)
                     sftp.put(s, remote_dir + "/" + s)
                     sftp.chmod(remote_dir + "/" + s, 640)
                     print("Copy of file " + s + "to remote host " + host + " completed to " + remote_dir + "/" + s)
+        
+        # This is how the utility is normally used.        
+        else:    
+            for s in my_source_files:
+                if exists(source_dir + "/" + s):    
+                    if (remote_dir + "/" + s) not in remote_files:
+                        print("Copying " + s + " to remote host " + host)
+                        sftp.put(s, remote_dir + "/" + s)
+                        sftp.chmod(remote_dir + "/" + s, 640)
+                        print("Copy of file " + s + "to remote host " + host + " completed to " + remote_dir + "/" + s)
     
     sftp.close()
 
@@ -211,6 +221,14 @@ def delete_obsolete_files(my_remote_dir):
             
 # end function delete_obsolete_files()
 
+def delete_source_files(my_source_files):
+    for s in my_source_files:
+        if exists(source_dir + "/" + s):
+            print("Deleting file " + s + " from source directory")
+            os.unlink(s)
+            
+# end function delete_source_files()
+
 ######################################
 # Main program body
 ######################################
@@ -218,7 +236,7 @@ def delete_obsolete_files(my_remote_dir):
 import os, pysftp, sys
 from os.path import exists
 
-print("ssh_copy_files.py version 1.0")
+print("ssh_copy_files.py version 1.1")
 
 if len(sys.argv) < 6 or len(sys.argv) > 8:
     print(
@@ -231,7 +249,9 @@ if len(sys.argv) < 6 or len(sys.argv) > 8:
         "\t/home/remote_user/data\n\n" +
         "Options for use with this utility include:\n" +
         "\t--overwrite-target\tOver-write any target files already present in the remote system's directory\n" +
-        "\t--delete-obsolete\tRemove files on the remote system that are not present on the local system\n"
+        "\t--delete-obsolete\tRemove files on the remote system that are not present on the local system\n" +
+        "\t--delete-input\t\tRemoves all source input files after they have been copied to the target system.\n" +
+        "\t\t\t\t--delete-inpute may not be used with --delete-obsolete\n"
     )
     raise RuntimeWarning("\n\nINVALID USAGE\n")
 
@@ -244,10 +264,16 @@ remote_dir          = sys.argv[5]
 # 1. set the options vars for subsequent logic
 overwrite_target    = False
 delete_obsolete     = False
-if "--overwrite-target" in sys.argv:
+delete_input        = False
+if "--overwrite-target" in sys.argv or "--OVERWRITE-TARGET" in sys.argv:
     overwrite_target = True
-if "--delete-obsolete" in sys.argv:
+if "--delete-obsolete" in sys.argv or "--DELETE-OBSOLETE" in sys.argv:
     delete_obsolete  = True
+if "--delete-input" in sys.argv or "--DELETE-INPUT" in sys.argv:
+    delete_input = True
+
+if delete_input and delete_obsolete:
+    raise RuntimeWarning("\n\nWARNING! --delete-inpute may not be used with --delete-obsolete\n")
 
 # 2. test local file data
 if not exists(pkey_file):
@@ -289,6 +315,10 @@ copy_files(source_files,
 if delete_obsolete:
     
     delete_obsolete_files(remote_dir)
+    
+# 7. If delete_input, delete the input files from the source system
+if delete_input:
+    delete_source_files(source_files)
 
 print("\n\nssh_copy_files.py exiting normally.\n")
 
