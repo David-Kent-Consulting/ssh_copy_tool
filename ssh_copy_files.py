@@ -273,7 +273,7 @@ if "--delete-input" in sys.argv or "--DELETE-INPUT" in sys.argv:
     delete_input = True
 
 if delete_input and delete_obsolete:
-    raise RuntimeWarning("\n\nWARNING! --delete-inpute may not be used with --delete-obsolete\n")
+    raise RuntimeWarning("\n\nWARNING! --delete-input may not be used with --delete-obsolete\n")
 
 # 2. test local file data
 if not exists(pkey_file):
