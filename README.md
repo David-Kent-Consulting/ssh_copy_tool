@@ -5,14 +5,15 @@ VM using the python pysftp library. It copies all of the files from a source
 directory to a target directory on the remote host. This tool by design will not
 recursively copy files. This tool sets the file access mode of remote files to
 660. It can with the correct option remove files on the remote host that are not
-present on the source host. We note that even today many sysadmin and DBA admin
-types still rely on rsync or secure NFS. We do not care for either approach
-because: 1) rsync is not secure; 2) NFS is not secure unless setup to use
-encryption, and; 3) encrypted NFS is difficult to setup and maintain.
+present on the source host or remove the source file after copying, but not both.
+We note that even today many sysadmin and DBA admin types still rely on rsync or
+secure NFS. We do not care for either approach because: 1) rsync is not secure;
+2) NFS is not secure unless setup to use encryption, and; 3) encrypted NFS is
+difficult to setup and maintain.
 
-DATE OF LATEST UPDATE
+VERSION AND DATE OF LATEST UPDATE
 ===================================================================================
-26-June-2023
+VERSION 1.1 - 25-August-2023
 
 LICENSE REQUIREMENTS
 ===================================================================================
@@ -31,18 +32,19 @@ script this. Know what you are getting into. Get your training in order.
 CAEATS
 ===================================================================================
 Make sure your SSH private key is kept secure. We recommend an access mode of 0600
-for this file. Make sure when testing that your defined timeout in
+for this file. Make sure when testing that your set timeout in
 /etc/sshd/sshd_config is appropriately defined. This utility should run fine
 when called from cron.
 
 REQUIREMENTS 
 ===================================================================================
-The following requirements are based on when these examples were created as of 26-June-2023. Technology changes fast, so be certain to
-consider testing at more current versions.
+The following requirements are based on when these examples were created as of
+26-June-2023 and subsequently modified on 25-August-2023. Technology changes fast,
+so be certain to consider testing at more current versions.
 
 | Package                           |  Version      |  Source                                                                                                       |
 |-----------------------------------|---------------|---------------------------------------------------------------------------------------------------------------|
-| A Fedora kernel                   | V7, V8, or V9 | We have tested on RHEL 7.9 and 8.x. We have tested on OLE 7.9, 8.x, and 9.0. We have not tested on Ubuntu.    |
+| A Fedora or ubuntu kernel         | V7, V8, or V9 | We have tested on RHEL 7.9 and 8.x. We have tested on OLE 7.9, 8.x, and 9.0. We have tested on WSL's ubuntu.  |
 | Python                            | 3.6x or 3.8x  | We strongly recommend 3.8x or later since 3.6x is deprecated.                                                 |
 | PIP                               | Version 3     | Sets with your Linux distro.                                                                                  |
 | pysftp                            | V 0.2.9       | This is old but stable code.                                                                                  |
