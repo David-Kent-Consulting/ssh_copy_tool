@@ -147,35 +147,81 @@ def copy_files(my_source_files,
     for f in wtcb.flist:
         remote_files.append(f)
 
-    # copy the files to the remote host and set the target files to access mode 640
-    with pysftp.Connection(
-        host=host,
-        private_key=pkey_file,
-        username=user
-    ) as sftp:
-        
-        # This logic over-writes all remote files on the remote host within the
-        # remote directory.
-        if overwrite_target:
-            for s in my_source_files:
-                if exists(source_dir + "/" + s):
-                    print("Copying " + s + " to remote host " + host)
-                    sftp.put(s, remote_dir + "/" + s)
-                    sftp.chmod(remote_dir + "/" + s, 640)
-                    print("Copy of file " + s + "to remote host " + host + " completed to " + remote_dir + "/" + s)
-        
-        # This is how the utility is normally used.        
-        else:    
-            for s in my_source_files:
-                if exists(source_dir + "/" + s):    
-                    if (remote_dir + "/" + s) not in remote_files:
-                        print("Copying " + s + " to remote host " + host)
-                        sftp.put(s, remote_dir + "/" + s)
+    # copy the files to the remote host and set the target files to access mode 640        
+    # This logic over-writes all remote files on the remote host within the
+    # remote directory.
+    failed_files = []
+    if overwrite_target:
+        for s in my_source_files:
+            if exists(source_dir + "/" + s):
+                print("Copying " + s + " to remote host " + host)
+                with pysftp.Connection(
+                    host=host,
+                    private_key=pkey_file,
+                    username=user
+                ) as sftp:
+                    try:
+                        sftp.put(s, remote_dir + "/" + s, preserve_mtime=True)
                         sftp.chmod(remote_dir + "/" + s, 640)
-                        print("Copy of file " + s + "to remote host " + host + " completed to " + remote_dir + "/" + s)
-    
-    sftp.close()
 
+                        print("Copy of file " + s + "to remote host " + host + " completed to " + remote_dir + "/" + s)
+                    except Exception as err:
+                        # this will log the full error message and traceback
+                        print("ERROR: copy of file " + s + "to remote host " + host + " failed to " + remote_dir + "/" + s, err)
+                        failed_files.append(s) 
+                        continue
+    
+    # This is how the utility is normally used.        
+    else:    
+        for s in my_source_files:
+            if exists(source_dir + "/" + s):    
+                if (remote_dir + "/" + s) not in remote_files:
+                    print("Copying " + s + " to remote host " + host)
+                    with pysftp.Connection(
+                        host=host,
+                        private_key=pkey_file,
+                        username=user
+                    ) as sftp:
+                        try:
+                            sftp.put(s, remote_dir + "/" + s, preserve_mtime=True)
+                            sftp.chmod(remote_dir + "/" + s, 640)
+
+                            print("Copy of file " + s + "to remote host " + host + " completed to " + remote_dir + "/" + s)
+                        except Exception as err:
+                            # this will log the full error message and traceback
+                            print("ERROR: copy of file " + s + "to remote host " + host + " failed to " + remote_dir + "/" + s, err) 
+                            failed_files.append(s) 
+                            continue
+                    #end with 
+                #end if remote file not found
+            else:
+                print("Error copying " + source_dir + "/" + s + " the copy failed, and now the source file no longer exists.")
+
+            #end if exists source file
+        #end for loop over source dir
+    #end else, not ovewriting
+
+    for s in failed_files:
+        if exists(source_dir + "/" + s):
+            print("Copying " + s + " to remote host " + host)
+            with pysftp.Connection(
+                host=host,
+                private_key=pkey_file,
+                username=user
+            ) as sftp:
+                try:
+                    sftp.put(s, remote_dir + "/" + s, preserve_mtime=True)
+                    sftp.chmod(remote_dir + "/" + s, 640)
+
+                    print("Copy of file " + s + "to remote host " + host + " completed to " + remote_dir + "/" + s)
+                except Exception as err:
+                    # this will log the full error message and traceback
+                    print("ERROR: copy of file " + s + "to remote host " + host + " failed to " + remote_dir + "/" + s, err)
+                    failed_files.append(s) 
+                    continue
+        else:
+            print("Error copying " + source_dir + "/" + s + " the copy failed, and now the source file no longer exists.")
+    #end for failed
 # end function copy_files()
 
 def delete_obsolete_files(my_remote_dir):
