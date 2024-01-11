@@ -210,13 +210,13 @@ def copy_files(my_source_files,
  
         iNumFailures = len(failed_files)
         print("Number of failed files was: " + str(iNumFailures) + "...")
-
-        iTheLimit = 5 * int(iNumFailures)
+        #iModTest = 1 #iLoopLimit % int(iNumFailures)
+        iTheLimit = 3 #5 * int(iNumFailures)
         print("Number of retries is: " + str(iTheLimit) + "...")
-
+        # print("mod: " + iModTest )
         for s in failed_files:
             iLoopLimit += 1
-
+            #print("Number of failed files was: " + iNumFailures + " and Loop Limit is: " + iLoopLimit + "...")
             if exists(source_dir + "/" + s):
                 print("Copying " + s + " to remote host " + host)
                 with pysftp.Connection(
@@ -242,8 +242,10 @@ def copy_files(my_source_files,
             else:
                 print("Error copying " + source_dir + "/" + s + " the copy failed, and now the source file no longer exists.")
 
-            #if we had failed files from above, make sure we loop over them until iTheLimit is reached
+            #if we had failed files from above, make sure we loop over them twice
+            #if ((iNumFailures > 0) & ((iLoopLimit > iNumFailures) & (iLoopLimit % iNumFailures == 0))):
             if (iLoopLimit >= iTheLimit):
+               #print("Number of failed files was: " + iNumFailures + " and Loop Limit is: " + iLoopLimit + ", breaking the loop.")
                print("Loop Limit is: " + str(iLoopLimit) + ", breaking the loop.")
                break
         #end for failed
@@ -258,7 +260,7 @@ def copy_files(my_source_files,
                 ) as sftp:
                     try:
                         print("Delete remote partial file: " + remote_dir + "/" + f)
-                        sftp.remove(f)
+                        sftp.remove(remote_dir + "/" + f)
 
                     except Exception as err:
                         print("Error removing file.",err)
