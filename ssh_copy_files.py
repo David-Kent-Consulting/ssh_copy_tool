@@ -155,6 +155,9 @@ def copy_files(my_source_files,
         if overwrite_target:
             for s in my_source_files:
                 if exists(source_dir + "/" + s):
+                    # ct stores current time
+                    ct = datetime.datetime.now()
+                    print("current time:-", ct)
                     print("Copying " + s + " to remote host " + host)
                     with pysftp.Connection(
                         host=host,
@@ -166,8 +169,14 @@ def copy_files(my_source_files,
                             sftp.chmod(remote_dir + "/" + s, 640)
 
                             print("Copy of file " + s + " to remote host " + host + " completed to " + remote_dir + "/" + s)
+                            # ct stores current time
+                            ct = datetime.datetime.now()
+                            print("current time:-", ct)
                         except Exception as err:
                             # this will log the full error message and traceback
+                            # ct stores current time
+                            ct = datetime.datetime.now()
+                            print("current time:-", ct)
                             print("ERROR: copy of file " + s + " to remote host " + host + " failed to " + remote_dir + "/" + s, err)
                             failed_files.append(s) 
                             continue
@@ -179,6 +188,8 @@ def copy_files(my_source_files,
             for s in my_source_files:
                 if exists(source_dir + "/" + s):    
                     if (remote_dir + "/" + s) not in remote_files:
+                        ct = datetime.datetime.now()
+                        print("current time:-", ct)
                         print("Copying " + s + " to remote host " + host)
                         with pysftp.Connection(
                             host=host,
@@ -189,9 +200,14 @@ def copy_files(my_source_files,
                                 sftp.put(s, remote_dir + "/" + s, preserve_mtime=True)
                                 sftp.chmod(remote_dir + "/" + s, 640)
 
+                                ct = datetime.datetime.now()
+                                print("current time:-", ct)
                                 print("Copy of file " + s + " to remote host " + host + " completed to " + remote_dir + "/" + s)
                             except Exception as err:
                                 # this will log the full error message and traceback
+                                # ct stores current time
+                                ct = datetime.datetime.now()
+                                print("current time:-", ct)
                                 print("ERROR: copy of file " + s + " to remote host " + host + " failed to " + remote_dir + "/" + s, err) 
                                 failed_files.append(s) 
                                 continue
@@ -218,6 +234,8 @@ def copy_files(my_source_files,
             iLoopLimit += 1
             #print("Number of failed files was: " + iNumFailures + " and Loop Limit is: " + iLoopLimit + "...")
             if exists(source_dir + "/" + s):
+                ct = datetime.datetime.now()
+                print("current time:-", ct)
                 print("Copying " + s + " to remote host " + host)
                 with pysftp.Connection(
                     host=host,
@@ -228,6 +246,8 @@ def copy_files(my_source_files,
                         sftp.put(s, remote_dir + "/" + s, preserve_mtime=True)
                         sftp.chmod(remote_dir + "/" + s, 640)
 
+                        ct = datetime.datetime.now()
+                        print("current time:-", ct)
                         print("Copy of file " + s + " to remote host " + host + " completed to " + remote_dir + "/" + s)
                     except Exception as err:
                         # this will log the full error message and traceback
